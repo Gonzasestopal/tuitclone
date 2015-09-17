@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+th {background-color:blue;}
+td {background-color:grey;}
+</style>
+</head>
+<body>
+<p>{{all}} todos </p>
+<p>{{me}} yo </p>
+<p>{{notme}} followed </p>
+<p>{{notfollow}} not followed </p>
+<p>{{tweets}}</p>
+<table>
+<tr>
+<th colspan="4">followed</th>
+</tr>
+<tr>
+{% for user in notme %}
+{% if user in notfollow %}
+<td>{{ user }}<a href="add_follow/{{user.id}}"> Follow </a></td>
+{% else %}
+<td>{{ user }}<a href="remove_follow/{{user.id}}"> Unfollow </a></td>
+
+{% endif %}
+{% endfor %}
+</tr>
+<th colspan="4">unfollowed</th>
+<tr>
+{% for user in notfollow %}
+{% if user in notfollow %}
+<td>{{ user }}<a href="add_follow/{{user.id}}"> Follow </a></td>
+{% else %}
+<td>{{ user }}<a href="remove_follow/{{user.id}}"> Unfollow </a></td>
+{% endif %}
+{% endfor %}
+</tr>
+
+</table>
+<a href="logout">logout</a>
+</body>
+</html>
