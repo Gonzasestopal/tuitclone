@@ -7,17 +7,13 @@ td {background-color:grey;}
 </style>
 </head>
 <body>
-<p>{{all}} todos </p>
-<p>{{me}} yo </p>
-<p>{{notme}} followed </p>
-<p>{{notfollow}} not followed </p>
-<p>{{tweets}}</p>
+
 <table>
 <tr>
 <th colspan="4">followed</th>
 </tr>
 <tr>
-{% for user in notme %}
+{% for user in follow %}
 {% if user in notfollow %}
 <td>{{ user }}<a href="add_follow/{{user.id}}"> Follow </a></td>
 {% else %}
@@ -39,5 +35,16 @@ td {background-color:grey;}
 
 </table>
 <a href="logout">logout</a>
+
+{% for user in users %}
+	{% for tweet in user.tweet_set.all %}
+	<p> {{user}} hizo {{tweet}}  <a href="update_tweet/{{tweet.id}}">edit</a><a href="delete_tweet/{{tweet.id}}"> delete</a> </p>
+	{% endfor %}
+{% endfor %}
+<form method="POST" action="{% url 'new_tweet' %}">
+{% csrf_token %}
+<input type="text" name="tweet">
+<input type="submit" value="tweet">
+</form> 
 </body>
 </html>

@@ -4,7 +4,7 @@ from django.conf import settings
 # Create your models here.
 
 class Tweet(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL)
+	user = models.ForeignKey(settings.AUTH_USER_MODEL) #MyUser
 	tweet = models.CharField(max_length=140)
 
 	def __unicode__(self):
