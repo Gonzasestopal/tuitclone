@@ -1,7 +1,16 @@
-<form method="POST">
-{% csrf_token %}
-<input type="text" name="usuario">
-<input type="text" name="password">
-
-<input type="submit" value="login">
-</form>
+{% extends 'bases/base.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class='col-md-4'>
+<div class='well'>
+  <form method="POST" class="form-inline">
+  {% csrf_token %}
+  	<div class="form-group">
+<input type="text" placeholder="Usuario" class="form-control" style="width:120px" name="usuario">
+<input type="text" placeholder="Contraseña" class="form-control" style="width:120px" name="password">
+</div>
+  <input type="submit" value="login" class="btn btn-default" style="width:100px">
+  </form>
+  </div>
+  </div>
+{% endblock %}

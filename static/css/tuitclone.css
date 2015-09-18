@@ -1,0 +1,5 @@
+ /*#back {height:250px; width:100%; background-image: url(/static/img/separator-4.jpg);}*/
+.navbar {border:none; margin-top: 10px;}
+ body {background-color: lightgray}
+ #create {border-color: lightblue;}
+i {float:right; margin:0 5px 0 5px;}

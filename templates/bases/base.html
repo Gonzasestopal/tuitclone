@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Template</title>
+  <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+  <link rel="stylesheet" href="{% static 'css/tuitclone.css' %}">
+</head>
+<body>
+<div id='back'></div>
+<div class="container-fluid">
+<nav class="navbar navbar-default">
+
+<ul class="nav navbar-nav navbar-left">
+<li><a href="/">Home</a></li>
+<li><a href="/timeline/">Timeline</a></li>
+<li><a href="/lista_rt/">Mis Retuits</a></li>
+</ul>
+
+<ul class="nav navbar-nav navbar-right">
+<li><a href="#">Sign in</a></li>
+<li><a href="logout">Log out</a></li>
+</ul>
+</nav>
+
+
+
+{% if messages %}
+	{% for message in messages %}
+		<div class="alert alert-{{message.tags}}" role="alert">{{ message }}</div>
+	{% endfor %}
+{% endif %}
+
+<div class='row'>
+<div class='col-md-4'>
+<div class='well'>
+  <h1>Trends</h1>
+  <p> #devF </p>
+  <p> #cintanegra </p>
+  <p> #tacosychelas</p>
+</div>
+</div>
+
+
+{% block content %}
+
+
+
+{% endblock %}
+
+<div class='col-md-4'>
+<div class='well'>
+  <h1>Who to follow</h1>
+  {% for user in notme %}
+  {% if user in follow %}
+  <p><a href="remove_follow/{{user.id}}"> @ {{ user.usuario }}</a></p>
+  {% else %}
+  <p><a href="add_follow/{{user.id}}"> @ {{ user.usuario }}</a></p>
+  {% endif %}
+
+  {% endfor %}
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from django.contrib.messages import constants as messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -57,6 +58,11 @@ ROOT_URLCONF = 'followx.urls'
 
 WSGI_APPLICATION = 'followx.wsgi.application'
 
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
@@ -90,4 +96,8 @@ STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = (
         os.path.join(BASE_DIR, 'templates'),
+    )
+
+STATICFILES_DIRS = (
+        os.path.join(BASE_DIR, 'static'),
     )

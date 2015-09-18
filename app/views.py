@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, View
-from app.models import MyUser, Tweet
+from app.models import MyUser, Tweet, Retweet, Favorite
 from app.forms import TweetForm
 from django.db.models import Q
 from django.core.urlresolvers import reverse
@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.http import HttpResponse
+from django.contrib import messages
 
 # Create your views here.
 
@@ -17,16 +18,19 @@ class Home(TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super(Home,self).get_context_data(**kwargs)
 		context['all'] = MyUser.objects.all()
-		context['me'] = MyUser.objects.get(usuario=self.request.user)
+		context['notme'] = MyUser.objects.filter(~Q(usuario=self.request.user))
 		context['follow'] = MyUser.objects.filter(follow__usuario=self.request.user)
 		context['notfollow'] = MyUser.objects.filter(~Q(follow__usuario=self.request.user))
 		context['users'] = MyUser.objects.get(usuario=self.request.user).follow.all()
+		context['retweets'] = Retweet.objects.all().values_list('tweet__id', flat=True)
+		context['favorites'] = Favorite.objects.all().values_list('tweet__id', flat=True)
 		return context
 
 def new_tweet(request):
 	if request.method == 'POST':
 		tweet = Tweet(tweet = request.POST['tweet'], user=request.user)
 		tweet.save()
+		messages.success(request, 'Twiteado')
 		return redirect(reverse('home'))
 
 	return render(request, 'new_tweet.html')
@@ -50,15 +54,6 @@ def delete_tweet(request, id_tweet):
 	Tweet.objects.filter(id=id_tweet).delete()
 	return redirect(reverse('home'))
 
-# def update_tweet(request, id_tweet):
-# 	if request.method == 'POST':
-# 		get_object_or_404(Tweet, id=id_tweet)
-# 		tweet = Tweet(tweet = request.POST['tweet'], user=request.user)
-# 		tweet.save()
-# 		return redirect(reverse('home'))
-
-# 	tweet = Tweet.objects.get(id=id_tweet)
-# 	return render(request, 'update_tweet.html', {'tweet': tweet})
 		
 class AddFollow(View):
 	def get(self,request,id):
@@ -90,3 +85,51 @@ def login(request):
 def logout(request):
 	auth_logout(request)
 	return redirect(reverse('home'))
+
+class AddRetweet(View):
+	def get(self, request, id_tweet):
+		try:
+			tweet = Tweet.objects.get(~Q(user=request.user), id=id_tweet)
+			retweet = Retweet.objects.get_or_create(user=request.user, tweet=tweet)
+		except:
+			messages.warning(request, 'No se puede anadir a retweets')
+			return redirect(reverse('home'))
+
+		messages.success(request, 'Retwiteado')
+		return redirect(reverse('home'))
+
+class RemoveRetweet(View):
+	def get(self,request, id_tweet):
+		try:
+			tweet = Tweet.objects.get(~Q(user=request.user), id=id_tweet)
+			retweet = Retweet.objects.get(user=request.user, tweet=tweet).delete()
+		except:
+			messages.warning(request, 'No se puede eliminar de retweets')
+			return redirect(reverse('home'))
+
+		messages.success(request, 'Retwit eliminado')
+		return redirect(reverse('home'))
+
+class AddFavorite(View):
+	def get(self, request, id_tweet):
+		try:
+			tweet = Tweet.objects.get(~Q(user=request.user), id=id_tweet)
+			favorite = Favorite.objects.get_or_create(user=request.user, tweet=tweet)
+		except:
+			messages.warning(request, 'No se puede anadir')
+			return redirect(reverse('home'))
+		
+		messages.success(request, 'Anadido a favoritos')
+		return redirect(reverse('home'))
+
+class RemoveFavorite(View):
+	def get(self, request, id_tweet):
+		try:
+			tweet = Tweet.objects.get(~Q(user=request.user), id=id_tweet)
+			favorite = Favorite.objects.get(user=request.user, tweet=tweet).delete()
+		except:
+			messages.warning(request, 'No se puede eliminar')
+			return redirect(reverse('home'))
+
+		messages.success(request, 'Favorito eliminado')
+		return redirect(reverse('home'))

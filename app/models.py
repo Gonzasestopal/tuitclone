@@ -4,11 +4,24 @@ from django.conf import settings
 # Create your models here.
 
 class Tweet(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL) #MyUser
-	tweet = models.CharField(max_length=140)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    tweet = models.CharField(max_length=140)
+    date = models.DateTimeField(auto_now_add=True)   
+    user_favs = models.ManyToManyField(settings.AUTH_USER_MODEL, through = 'app.Favorite', related_name = 'user_favs')
+    user_rts = models.ManyToManyField(settings.AUTH_USER_MODEL, through = 'app.Retweet', related_name = 'user_rts')
 
-	def __unicode__(self):
-		return self.tweet
+    def __unicode__(self):
+        return self.tweet 
+
+class Favorite(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    tweet = models.ForeignKey('app.Tweet')
+    date = models.DateTimeField(auto_now_add=True) 
+
+class Retweet(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    tweet = models.ForeignKey('app.Tweet')
+    date = models.DateTimeField(auto_now_add=True)
 
 class MyUserManager(BaseUserManager):
     def _create_user(self, usuario, email, password, is_superuser, is_active, is_staff):

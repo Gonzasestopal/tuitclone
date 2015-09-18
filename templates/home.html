@@ -1,50 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-th {background-color:blue;}
-td {background-color:grey;}
-</style>
-</head>
-<body>
+{% extends 'bases/base.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class='col-md-4'>
+<div class='well' id='create'>
+	<form class="form-inline" method="POST" action="{% url 'new_tweet' %}">
+	{% csrf_token %}
+	<div class="form-group">
+	<input type="text" placeholder="Que pedo..." class="form-control" style="width:290px" name="tweet">
+	</div>
+	<input type="submit" name="submit" class="btn btn-default" value="Tweet">
+</form>
+</div>
 
-<table>
-<tr>
-<th colspan="4">followed</th>
-</tr>
-<tr>
-{% for user in follow %}
-{% if user in notfollow %}
-<td>{{ user }}<a href="add_follow/{{user.id}}"> Follow </a></td>
-{% else %}
-<td>{{ user }}<a href="remove_follow/{{user.id}}"> Unfollow </a></td>
-
-{% endif %}
-{% endfor %}
-</tr>
-<th colspan="4">unfollowed</th>
-<tr>
-{% for user in notfollow %}
-{% if user in notfollow %}
-<td>{{ user }}<a href="add_follow/{{user.id}}"> Follow </a></td>
-{% else %}
-<td>{{ user }}<a href="remove_follow/{{user.id}}"> Unfollow </a></td>
-{% endif %}
-{% endfor %}
-</tr>
-
-</table>
-<a href="logout">logout</a>
 
 {% for user in users %}
-	{% for tweet in user.tweet_set.all %}
-	<p> {{user}} hizo {{tweet}}  <a href="update_tweet/{{tweet.id}}">edit</a><a href="delete_tweet/{{tweet.id}}"> delete</a> </p>
-	{% endfor %}
+{% for tweet in user.tweet_set.all %}
+<div class='well'>
+<p><strong>{{ tweet }}</strong> @ {{ user }}</p> 
+<p>{{ tweet.date }}
+
+  <a href="update_tweet/{{ tweet.id }}"><i class="glyphicon glyphicon-pencil"></i></a>
+  <a href="delete_tweet/{{ tweet.id }}"><i class="glyphicon glyphicon-remove"></i></a>
+  
+  {% if tweet.id in favorites %} 
+  <a href="remove_favorite/{{ tweet.id }}"><i class="glyphicon glyphicon-star" style="color:yellow"></i></a> 
+  {% else %}
+  <a href="add_favorite/{{ tweet.id }}"><i class="glyphicon glyphicon-star"></i></a>
+  {% endif %}
+    <i class="badge"> {{ favorites.count }}</i></a>
+
+  {% if tweet.id in retweets %} 
+  <a href="remove_retweet/{{ tweet.id }}"><i class="glyphicon glyphicon-retweet" style="color:yellow"></i></a> 
+  {% else %}
+  <a href="add_retweet/{{ tweet.id }}"><i class="glyphicon glyphicon-retweet"></i></a>
+  {% endif %}
+</div>
 {% endfor %}
-<form method="POST" action="{% url 'new_tweet' %}">
-{% csrf_token %}
-<input type="text" name="tweet">
-<input type="submit" value="tweet">
-</form> 
-</body>
-</html>
+{% endfor %}
+
+
+
+
+</div>
+{% endblock %}
