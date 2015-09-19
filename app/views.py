@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, View
 from app.models import MyUser, Tweet, Retweet, Favorite
 from app.forms import TweetForm
+from app.admin import UserCreationForm
 from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate
@@ -24,6 +25,22 @@ class Home(TemplateView):
 		context['users'] = MyUser.objects.get(usuario=self.request.user).follow.all()
 		context['retweets'] = Retweet.objects.all().values_list('tweet__id', flat=True)
 		context['favorites'] = Favorite.objects.all().values_list('tweet__id', flat=True)
+		return context
+
+class Timeline(TemplateView):
+	template_name = 'timeline.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(Timeline,self).get_context_data(**kwargs)
+		context['timeline'] = Tweet.objects.filter(user=self.request.user)
+		return context
+
+class ListaRt(TemplateView):
+	template_name = 'lista_rt.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(ListaRt,self).get_context_data(**kwargs)
+		context['retweets'] = Retweet.objects.all()
 		return context
 
 def new_tweet(request):
@@ -85,6 +102,14 @@ def login(request):
 def logout(request):
 	auth_logout(request)
 	return redirect(reverse('home'))
+
+def signup(request):
+	form = UserCreationForm(request.POST or None)
+
+	if form.is_valid():
+		form.save()
+
+	return render(request, 'signup.html', {'form' : form})
 
 class AddRetweet(View):
 	def get(self, request, id_tweet):

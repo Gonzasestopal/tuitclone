@@ -1,0 +1,12 @@
+{% extends 'bases/base.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class='col-md-4'>
+{% for tweet in timeline %}
+<div class='well'>
+{{tweet}}
+</div>
+{% endfor %}
+
+</div>
+{% endblock %}
