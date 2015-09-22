@@ -3,6 +3,7 @@ from django.contrib import admin
 from app.views import Home, AddFavorite, ListaRt, Timeline, signup, RemoveFavorite, AddFollow, RemoveFollow, login, logout, RemoveRetweet, AddRetweet, new_tweet, update_tweet, delete_tweet
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from api import urls as api_urls
 
 
 urlpatterns = [
@@ -21,5 +22,6 @@ urlpatterns = [
     url(r'^add_favorite/(?P<id_tweet>\d{1,})/$', AddFavorite.as_view(), name='add_favorite'),
     url(r'^remove_favorite/(?P<id_tweet>\d{1,})/$', RemoveFavorite.as_view(), name='remove_favorite'),
     url(r'^add_retweet/(?P<id_tweet>\d{1,})/$', AddRetweet.as_view(), name='add_retweet'),
-    url(r'^remove_retweet/(?P<id_tweet>\d{1,})/$', RemoveRetweet.as_view(), name='remove_retweet')
+    url(r'^remove_retweet/(?P<id_tweet>\d{1,})/$', RemoveRetweet.as_view(), name='remove_retweet'),
+    url(r'^api/', include(api_urls), name='api_urls')
 ]

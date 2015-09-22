@@ -12,6 +12,15 @@
 </form>
 </div>
 
+{% for user in users %}
+{% for tweet in user.tweet_set.all %}
+{% if tweet in trends %}
+<div class='well'>
+{{ tweet }}
+</div>
+{% endif %}
+{% endfor %}
+{% endfor %}
 
 {% for user in users %}
 {% for tweet in user.tweet_set.all %}
@@ -27,7 +36,7 @@
   {% else %}
   <a href="add_favorite/{{ tweet.id }}"><i class="glyphicon glyphicon-star"></i></a>
   {% endif %}
-    <i class="badge"> {{ favorites.count }}</i></a>
+    <i class="badge"> {{ tweet.user_favs.count }}</i></a>
 
   {% if tweet.id in retweets %} 
   <a href="remove_retweet/{{ tweet.id }}"><i class="glyphicon glyphicon-retweet" style="color:yellow"></i></a> 

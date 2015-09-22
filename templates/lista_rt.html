@@ -4,7 +4,8 @@
 <div class='col-md-4'>
 {% for tweet in retweets %}
 <div class='well'>
-{{tweet.tweet}}
+<p>{{tweet.tweet}} @ {{tweet.tweet.user}}</p>
+{{tweet.date}}
 </div>
 {% endfor %}
 

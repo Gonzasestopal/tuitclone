@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserCreationForm, UserChangeForm
-from app.models import MyUser, Tweet
+from app.models import MyUser, Tweet, Tag, Favorite, Retweet
 from django.db import models
 
 
@@ -51,6 +51,23 @@ class UserChangeForm(forms.ModelForm):
         # field does not have access to the initial value
         return self.initial["password"]
 
+class FavoriteInline(admin.StackedInline):
+    model = Favorite
+    extra = 1
+
+class RetweetInline(admin.StackedInline):
+    model = Retweet
+    extra = 1
+
+class TweetAdmin(admin.ModelAdmin):
+    search_fields = ['tweet', 'user__usuario']
+    list_display = ["__unicode__", 'user','tags_']
+    list_filter = ['tags']
+    inlines = [RetweetInline, FavoriteInline]
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['tag']
+
 
 class MyUserAdmin(UserAdmin):
     # The forms to add and change user instances
@@ -60,10 +77,10 @@ class MyUserAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('usuario','is_active','first_name','is_staff')
+    list_display = ('__unicode__', 'usuario','is_active','first_name','is_staff','follow_')
     list_filter = ('is_staff', 'is_superuser')
     fieldsets = (
-        (None, {'fields': ('usuario', 'password','first_name','follow', )}),
+        (None, {'fields': ('usuario', 'password','first_name')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
@@ -79,8 +96,9 @@ class MyUserAdmin(UserAdmin):
     filter_horizontal = ()
 
 # Now register the new UserAdmin...
-admin.site.register(Tweet)
+admin.site.register(Tweet, TweetAdmin)
 admin.site.register(MyUser, MyUserAdmin)
+admin.site.register(Tag, TagAdmin)
 # ... and, since we're not using Django's built-in permissions,
 # unregister the Group model from admin.
 admin.site.unregister(Group)

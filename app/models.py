@@ -1,17 +1,37 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractBaseUser, BaseUserManager
 from django.conf import settings
+from string import join
 # Create your models here.
+
+class Tag(models.Model):
+    tag = models.CharField(max_length=50)
+
+    def __unicode__(self):
+        return self.tag
 
 class Tweet(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     tweet = models.CharField(max_length=140)
-    date = models.DateTimeField(auto_now_add=True)   
+    date = models.DateTimeField(auto_now_add=True)
+    tags = models.ManyToManyField(Tag)   
     user_favs = models.ManyToManyField(settings.AUTH_USER_MODEL, through = 'app.Favorite', related_name = 'user_favs')
     user_rts = models.ManyToManyField(settings.AUTH_USER_MODEL, through = 'app.Retweet', related_name = 'user_rts')
 
     def __unicode__(self):
         return self.tweet 
+
+    def tags_(self):
+        lst = [x[1] for x in self.tags.values_list()]
+        return str(join(lst, ', '))
+
+    # def user_favs_(self):
+    #     lst = [x[1] for x in self.user_favs.values_list()]
+    #     return str(join(lst, ', '))
+
+    # def user_rts_(self):
+    #     lst = [x[1] for x in self.user_rts.values_list()]
+    #     return str(join(lst,', '))
 
 class Favorite(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -76,6 +96,11 @@ class MyUser(AbstractBaseUser):
 
     USERNAME_FIELD = 'usuario'
     REQUIRED_FIELDS = ['email']
+
+
+    def follow_(self):
+        lst =[x[1] for x in self.follow.values_list()]
+        return str(join(lst, ', '))
 
 
     def get_full_name(self):

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, View
-from app.models import MyUser, Tweet, Retweet, Favorite
+from app.models import MyUser, Tweet, Retweet, Favorite, Tag
 from app.forms import TweetForm
 from app.admin import UserCreationForm
 from django.db.models import Q
@@ -19,12 +19,30 @@ class Home(TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super(Home,self).get_context_data(**kwargs)
 		context['all'] = MyUser.objects.all()
+		context['tags'] = Tag.objects.all()
 		context['notme'] = MyUser.objects.filter(~Q(usuario=self.request.user))
 		context['follow'] = MyUser.objects.filter(follow__usuario=self.request.user)
 		context['notfollow'] = MyUser.objects.filter(~Q(follow__usuario=self.request.user))
 		context['users'] = MyUser.objects.get(usuario=self.request.user).follow.all()
 		context['retweets'] = Retweet.objects.all().values_list('tweet__id', flat=True)
-		context['favorites'] = Favorite.objects.all().values_list('tweet__id', flat=True)
+		#context['trends'] = Tweet.objects.filter(Q(tweet__contains='ctm') | Q(tweet__contains='#devF') | Q(tweet__icontains='#cintanegra') | Q(tweet__icontains='#tacosychelas'))
+		context['favorites'] = Favorite.objects.filter(user=self.request.user).values_list('tweet__id', flat=True)
+		return context
+
+class Home1(TemplateView):
+	template_name='home2.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(Home,self).get_context_data(**kwargs)
+		context['trends'] = Tweet.objects.filter(Q(tweet__contains='#devF'))
+		return context
+
+class Home1(TemplateView):
+	template_name='home3.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(Home,self).get_context_data(**kwargs)
+		context['trends'] = Tweet.objects.filter(Q(tweet__contains='#cintanegra'))
 		return context
 
 class Timeline(TemplateView):
@@ -32,7 +50,7 @@ class Timeline(TemplateView):
 
 	def get_context_data(self, **kwargs):
 		context = super(Timeline,self).get_context_data(**kwargs)
-		context['timeline'] = Tweet.objects.filter(user=self.request.user)
+		context['timeline'] = Tweet.objects.filter(user=self.request.user).order_by('-date')
 		return context
 
 class ListaRt(TemplateView):
@@ -40,7 +58,7 @@ class ListaRt(TemplateView):
 
 	def get_context_data(self, **kwargs):
 		context = super(ListaRt,self).get_context_data(**kwargs)
-		context['retweets'] = Retweet.objects.all()
+		context['retweets'] = Retweet.objects.filter(user=self.request.user).order_by('-date')
 		return context
 
 def new_tweet(request):
@@ -70,7 +88,6 @@ def update_tweet(request, id_tweet):
 def delete_tweet(request, id_tweet):
 	Tweet.objects.filter(id=id_tweet).delete()
 	return redirect(reverse('home'))
-
 		
 class AddFollow(View):
 	def get(self,request,id):

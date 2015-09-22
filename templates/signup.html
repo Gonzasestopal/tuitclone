@@ -3,16 +3,16 @@
 {% block content %}
 <div class='col-md-4'>
 <div class='well'>
-  <form method="POST" class="form-inline">
+  <form method="POST" class="form-inline" style="text-align:center">
   {% csrf_token %}
-  	<div class="form-group">
-<p><input type="text" placeholder="Usuario" class="form-control" style="width:120px" name="usuario"> </p>
-<p> <input type="text" placeholder="email" class="form-control" style="width:120px" name="email"> </p>
-<p> <input type="text" placeholder="Contraseña" class="form-control" style="width:120px" name="password1"> </p>
-<p> <input type="text" placeholder="Contraseña" class="form-control" style="width:120px" name="password2"> </p>
+  	<div class="form-group" >
+<p><input type="text" placeholder="Usuario" class="form-control" style="width:240px" name="usuario">  </p>
+ <p><input type="text" placeholder="email" class="form-control" style="width:240px" name="email">  </p>
+<p> <input type="text" placeholder="Contraseña" class="form-control" style="width:118px" name="password1">
+<input type="text" placeholder="Contraseña" class="form-control" style="width:118px;" name="password2"> </p>
 
 </div>
-  <input type="submit" value="signup" class="btn btn-default" style="width:100px">
+  <input type="submit" value="signup" class="btn btn-default" style="width:240px">
   </form>
   </div>
   </div>
